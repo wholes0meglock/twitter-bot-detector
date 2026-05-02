@@ -15,7 +15,15 @@
 
     "content_scripts": [
         {
-            "matches": ["*://*.x.com/*"],
+            "matches": ["https://x.com/*"],
+            "exclude_matches": [
+                "https://x.com/home*",
+                "https://x.com/explore*",
+                "https://x.com/notifications*",
+                "https://x.com/messages*",
+                "https://x.com/i/*",
+                "https://x.com/settings/*"
+            ],
             "js": ["content.js"]
         }
     ]

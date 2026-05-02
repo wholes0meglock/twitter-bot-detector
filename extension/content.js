@@ -1,6 +1,5 @@
 alert("CONTENT SCRIPT RUNNING");
 
-
 //follower following , date of join, total num of posts
 
 function sleep(ms) {
@@ -26,7 +25,7 @@ function parsingCommasAndSymbols(StringPassed)
     }
     return StringToFloat;
 }
-
+   
 async function scrapeFollowers()
 {
     const followersLink = document.querySelector('a[href*="followers"], a[href*="verified_followers"]');
@@ -51,41 +50,24 @@ async function scrapeFollowing()
 
 async function scrapeTotalPosts()
 {
-    // const totalPostsNeighborLink = document.querySelector('h2[role="heading"]');
-    // if(!totalPostsNeighborLink) return null;
-
-    // const parent = totalPostsNeighborLink.parentElement;
-    // if(!parent) return null;
-
-    // const parentDiv = parent.querySelector('div[dir="ltr"]')
-    // if(!parentDiv) return null;
-
-    // // const totalPostsLink = totalPostsNeighborLink?.nextElementSibling;
-
-    // const totalPostsString = parentDiv?.innerText;
-
-    // if (typeof totalPostsString !== "string") return null;
-
-    // const splitString = totalPostsString.split(" ")[0];
-
-    // const totalPosts = await parsingCommasAndSymbols(splitString);
-    
-    // return totalPosts;
-
-
-    const allDivs = document.querySelectorAll('div[dir="ltr"]');
-
-    for(let div of allDivs)
+    try
     {
-        const text = div.innerText;
+    const divs = document.querySelectorAll('div[dir="ltr"]');
 
-        if(text && text.toLowerCase().includes("posts"))
-        {
-            const matches  = text.match(/[\d,.]+[KM]?/gi);
-            if(!matches) return null;
-            // console.log(matches);   
-            return parsingCommasAndSymbols(matches[2]); //console man, if dom changes its over
+    for (let div of divs) {
+        const text = div.innerText?.trim();
+
+        if (!text) continue;
+
+        const match = text.match(/^([\d,.]+)\s+posts$/i);
+        if (match) {
+            return await parsingCommasAndSymbols(match[1]);
         }
+    }
+    }
+    catch(err)
+    {
+        return null;
     }
 }
 
@@ -124,7 +106,7 @@ async function scrapeDateOfJoin()
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    const currentDay = now.getDay();
+    const currentDay = now.getDate();
 
     let years = currentYear - yearStringCount;
     let months = currentMonth - month;
@@ -144,22 +126,84 @@ async function scrapeDateOfJoin()
     return {years,months,needRecentPostCount};
 }
 
-async function main()
+async function mainScrape()
 {
+    const path = window.location.pathname;
+
+    const isProfile = /^\/[^/]+$/.test(path);
+
+    if(!isProfile)
+    {
+      alert("not a profile twan, exiting..");
+      return;
+    }
+
     await sleep(5500);
     const followerCount = await scrapeFollowers();
     const followingCount = await scrapeFollowing();
     const TotalPosts = await scrapeTotalPosts();
-    const DateOfJoin = await scrapeDateOfJoin(); 
+    const DateOfJoin = await scrapeDateOfJoin();
+
+    // console.log(DateOfJoin.needRecentPostCount)
     // alert(followerCount,followingCount,TotalPosts);
     console.log(followerCount,followingCount,TotalPosts);
     console.log(DateOfJoin);
+
+    return {followerCount, followingCount, TotalPosts, DateOfJoin};
 }
  
 const scrapeLast90Days = async () =>
 {
+    await sleep(5000);
+    //90 days for reference
 
+    const cutoffTime = Date.now() - (90*24*60*60*1000);
+
+    let done = false;
+
+    const seenTweets = new Set();
+
+    while(!done)
+    {
+        const articles = document.querySelectorAll('article');
+
+        for(let tweet of articles)
+        {
+            const timeTweet = tweet?.querySelector('time');
+            if(!timeTweet) continue;
+
+            const dateTime = timeTweet.getAttribute('datetime');
+
+            const link = tweet.querySelector('a[href*="/status/"]');
+            const id = link?.href || dateTime;
+
+            if(!id || seenTweets.has(id)) continue;
+
+            const tweetTimeExact = new Date(dateTime).getTime();
+
+            if(tweetTimeExact >= cutoffTime)
+            {
+                seenTweets.add(id);
+            }
+            else if(tweetTimeExact < cutoffTime)
+            {
+                done = true;
+                break;
+            }
+        }
+        if(done) break;
+
+        window.scrollBy(0,1200);
+
+        await sleep(2500);
+    }
+
+
+    let countTweets = seenTweets.size;
+    console.log(countTweets);
+    return {countTweets};
 }
 
 
-main();
+// mainScrape();
+scrapeLast90Days();
