@@ -116,7 +116,8 @@ async function scrapeDateOfJoin()
         years--;
         months += 12;
     }
-    return {years,months};
+    const daysApprox = years*365 + months*30;
+    return {daysApprox};
 }
 
 async function mainScrape()
