@@ -116,14 +116,7 @@ async function scrapeDateOfJoin()
         years--;
         months += 12;
     }
-
-    let needRecentPostCount = false;
-
-    if(years === 0 && months <= 6)
-    {
-        needRecentPostCount = true;
-    }
-    return {years,months,needRecentPostCount};
+    return {years,months};
 }
 
 async function mainScrape()
