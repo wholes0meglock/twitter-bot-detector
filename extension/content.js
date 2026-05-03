@@ -1,4 +1,4 @@
-alert("CONTENT SCRIPT RUNNING");
+// alert("CONTENT SCRIPT RUNNING");
 
 //follower following , date of join, total num of posts
 
@@ -154,7 +154,7 @@ async function mainScrape()
  
 const scrapeLast90Days = async () =>
 {
-    await sleep(5000);
+    await sleep(7500);
     //90 days for reference
 
     const cutoffTime = Date.now() - (90*24*60*60*1000);
@@ -169,6 +169,10 @@ const scrapeLast90Days = async () =>
 
         for(let tweet of articles)
         {
+            const pinnedText = tweet?.querySelector('[data-testid="socialContext"]')?.innerText;;
+            
+            if(pinnedText?.includes("Pinned")) continue;
+
             const timeTweet = tweet?.querySelector('time');
             if(!timeTweet) continue;
 
@@ -205,5 +209,29 @@ const scrapeLast90Days = async () =>
 }
 
 
-// mainScrape();
-scrapeLast90Days();
+async function sendScrapedData()
+{
+    const token = crypto.randomUUID();
+    chrome.storage.local.set({ token });
+    
+    const {followerCount, followingCount, TotalPosts, DateOfJoin} = await mainScrape();
+    const countTweets = await scrapeLast90Days();
+
+    const UserData = 
+    {
+        followerCount, followingCount, TotalPosts, DateOfJoin, countTweets
+    }; 
+
+    const response = await fetch("http://localhost:3000/everything",
+        {
+            method: "POST",
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization" : `Bearer ${token}`
+            },
+            body = stringify.json(UserData),
+        });
+
+
+    console.log(response);    
+}
