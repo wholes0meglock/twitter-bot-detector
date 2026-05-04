@@ -11,8 +11,8 @@ const app = express();
 app.use(express.json())
 
 const allowedOrigins = [
-  "chrome://extensions/bkjnobdjfelpdikpabfbcjfnodgopoob",
-  "brave://extensions/bkjnobdjfelpdikpabfbcjfnodgopoob"
+  "chrome-extension://bkjnobdjfelpdikpabfbcjfnodgopoob",
+  "brave-extension://bkjnobdjfelpdikpabfbcjfnodgopoob"
 ];
 
 app.use(cors
@@ -41,10 +41,16 @@ app.use((req, res, next) => {
     console.log(`${req.method} ${req.url} ${date}`);
     next();
 });
-
-app.use("/everything", userRoute);
 app.use("/auth",auth)
+app.use("/everything", userRoute);
+
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+
+
+// app.use((err, req, res, next) => {
+//     console.error(err.message);
+//     res.status(403).json({ error: err.message });
+// });

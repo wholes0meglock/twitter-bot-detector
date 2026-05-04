@@ -5,3 +5,10 @@
 /backend/ml/model.pkl
 /backend/ml/vectorizer.pkl
 /backend/.env
+
+/backend/ml/bot_detector_model
+/backend/ml/processing.py
+
+
+/backend/ml/__pycache__/
+*.pyc

@@ -1,13 +1,19 @@
 from fastapi import FastAPI
 
 from pydantic import BaseModel
+from transformers import pipeline
 
 import pickle
 
 app = FastAPI()
 
-model = pickle.load(open("model.pkl","rb"))
-vectorizer = pickle.load(open("vectorizer.pkl","rb"))
+# model = pickle.load(open("model.pkl","rb"))
+# vectorizer = pickle.load(open("vectorizer.pkl","rb"))
+
+classifier = pipeline(
+    "text-classification",
+    model = "bot_detector_model"
+)
 
 class InputData(BaseModel):
     followers: int
@@ -31,10 +37,9 @@ def to_text(data):
 @app.post("/predict")
 def predict(data: InputData):
     text = to_text(data)
-    vec = vectorizer.transform([text])
-    pred = model.predict(vec)[0]
 
+    result = classifier(text)[0]
     return {
-        "prediction": int(pred),
-        "label": "human" if pred == 1 else "bot"
+        "label" : result["label"],
+        "score" : float(result["score"])
     }
