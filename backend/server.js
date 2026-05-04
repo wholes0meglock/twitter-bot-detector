@@ -1,7 +1,14 @@
 import express from "express"
 import cors from "cors"
+import userRoute from "./route/everything.js";
+import dotenv from "dotenv";
+dotenv.config();
+// import cookieParser from "cookie-parser";
+import auth from "./route/auth.js";
+
 
 const app = express();
+app.use(express.json())
 
 const allowedOrigins = [
   "chrome://extensions/bkjnobdjfelpdikpabfbcjfnodgopoob",
@@ -24,14 +31,6 @@ app.use(cors
   })
 );
 
-
-
-import userRoute from "./route/everything";
-
-import cookieParser from "cookie-parser";
-
-import auth from "./route/auth";
-
 app.get("/", (req,res) =>
 {
     res.send("working");   
@@ -43,7 +42,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/everything", everything);
+app.use("/everything", userRoute);
 app.use("/auth",auth)
 
 app.listen(3000, () => {

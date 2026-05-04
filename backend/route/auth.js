@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
-import Router from "express"
+import {Router} from "express"
+import crypto from "crypto"
 
 const router = Router();
 
@@ -19,4 +20,4 @@ router.get("/", (req,res) =>
 });
 
 
-module.exports(router);
+export default router;

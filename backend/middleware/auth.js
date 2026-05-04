@@ -22,3 +22,5 @@ let auth = (req,res,next) =>
         res.json({"Error": "invalid token"});
     }
 }
+
+export default auth;

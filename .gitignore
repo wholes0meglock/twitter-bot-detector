@@ -4,3 +4,4 @@
 /backend/ml/processed.csv
 /backend/ml/model.pkl
 /backend/ml/vectorizer.pkl
+/backend/.env
