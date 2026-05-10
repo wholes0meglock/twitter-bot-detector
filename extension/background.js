@@ -1,7 +1,6 @@
-import mainScrape from "./content";
-import scrapeLast90days from "./content";
+import {mainScrape,sendScrapedData} from "./content";
 
-async function sendScrapedData()
+async function getScrapedDataAndShow()
 {
     const res = await fetch("http://localhost:3000/auth");
     const {token} = await res.json();
@@ -17,13 +16,16 @@ async function sendScrapedData()
     const response = await fetch("http://localhost:3000/everything",
         {
             method: "POST",
-            headers = {
+            headers : {
                 "Content-Type": "application/json",
                 "Authorization" : `Bearer ${token}`
             },
-            body = stringify.json(UserData),
+            body : stringify.json(UserData),
         });
 
-
-    console.log(response);    
+    return response;
 }
+
+export default getScrapedDataAndShow;
+
+

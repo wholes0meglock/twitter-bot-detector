@@ -1,1 +1,22 @@
 <!-- when popped up extension -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <h3> Twitter Bot </h3>
+    <script src = "background.js"> </script>
+    <script>
+        async function show()
+        {
+            const data = await sendScrapedData();
+            document.getElementById("text").innerText = data;
+        }
+        show()
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

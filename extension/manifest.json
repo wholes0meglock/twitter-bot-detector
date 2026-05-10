@@ -7,9 +7,7 @@
         "default_title": "Twitter Bot Detection"
     },
     
-    "background": {
-        "service_worker": "background.js"
-    },
+    
 
     "permissions": ["storage","activeTab"],
 
@@ -24,7 +22,7 @@
                 "https://x.com/i/*",
                 "https://x.com/settings/*"
             ],
-            "js": ["content.js"]
+            "js" : ["background.js"]
         }
     ]
 

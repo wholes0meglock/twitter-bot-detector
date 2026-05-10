@@ -229,3 +229,5 @@ async function sendScrapedData()
 
     console.log(response);    
 }
+
+export default {mainScrape,sendScrapedData}
