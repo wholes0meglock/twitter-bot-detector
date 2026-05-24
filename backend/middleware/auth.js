@@ -1,7 +1,4 @@
 import jwt from "jsonwebtoken"
-
-
-
 let auth = (req,res,next) =>
 {
     const authHeader = req.headers.authorization;
@@ -9,17 +6,20 @@ let auth = (req,res,next) =>
 
     if(!token)
     {
-        res.send({error: "no valid token found"})
+        return res.status(401).json({
+            error: "no valid token found"
+        });
     }
     try
     {
     const decoded =  jwt.verify(token,process.env.SECRET);
-    req.user = decoded;
     next();
     }
     catch(err)
     {
-        res.json({"Error": "invalid token"});
+        return res.status(401).json({
+            error: "invalid token"
+        });
     }
 }
 

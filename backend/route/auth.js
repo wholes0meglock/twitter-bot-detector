@@ -15,7 +15,6 @@ router.get("/", (req,res) =>
             expiresIn : "7d"
         }
     )
-
     res.json({token});
 });
 

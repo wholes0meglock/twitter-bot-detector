@@ -1,6 +1,24 @@
-// alert("CONTENT SCRIPT RUNNING");
+alert("CONTENT SCRIPT RUNNING");
 
-//follower following , date of join, total num of posts
+
+
+chrome.runtime.onMessage.addListener((message,sender,sendResponse) =>
+    {
+        if(message.type === "SCRAPE")
+        {
+            (async () => {
+            try{
+            const dataProfile = await mainScrape();
+            const Last90daysActivity = await scrapeLast90Days();
+            sendResponse({dataProfile,Last90DaysActivity});}
+            catch(err)
+            {
+                sendResponse({error: err})
+            }
+            })();
+            return true;
+        }
+    })
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -139,7 +157,7 @@ async function mainScrape()
     const DateOfJoin = await scrapeDateOfJoin();
 
     // console.log(DateOfJoin.needRecentPostCount)
-    // alert(followerCount,followingCount,TotalPosts);
+    // alert(followerCount,followingCount,TotalPosts); 
     console.log(followerCount,followingCount,TotalPosts);
     console.log(DateOfJoin);
 
@@ -202,32 +220,3 @@ const scrapeLast90Days = async () =>
     return {countTweets};
 }
 
-
-async function sendScrapedData()
-{
-    const token = crypto.randomUUID();
-    chrome.storage.local.set({ token });
-    
-    const {followerCount, followingCount, TotalPosts, DateOfJoin} = await mainScrape();
-    const countTweets = await scrapeLast90Days();
-
-    const UserData = 
-    {
-        followerCount, followingCount, TotalPosts, DateOfJoin, countTweets
-    }; 
-
-    const response = await fetch("http://localhost:3000/everything",
-        {
-            method: "POST",
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization" : `Bearer ${token}`
-            },
-            body = stringify.json(UserData),
-        });
-
-
-    console.log(response);    
-}
-
-export default {mainScrape,sendScrapedData}

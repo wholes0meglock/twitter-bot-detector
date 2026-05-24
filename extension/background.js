@@ -1,18 +1,54 @@
-import {mainScrape,sendScrapedData} from "./content";
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
+{
+    if(message.type === "GET")
+    {
+        async function call()
+        {
+            try{
+            const data = await getScrapedDataAndShow();
+            sendResponse({data})
+            }
+            catch(err)
+            {
+                console.error(err);
+                sendResponse({"error": err})
+            }
+        }
+        call();
+        return true;
+    }
+})
+
 
 async function getScrapedDataAndShow()
 {
     const res = await fetch("http://localhost:3000/auth");
-    const {token} = await res.json();
-    chrome.storage.local.set({token});
-    
-    const {followerCount, followingCount, TotalPosts, DateOfJoin} = await mainScrape();
-    const countTweets = await scrapeLast90Days();
 
-    const UserData = 
+    const data = await res.json();
+    console.log(data);
+    const token = data.token;
+
+
+    await chrome.storage.local.set({token});
+
+    const tabs = await chrome.tabs.query({
+        active : true,
+        lastFocusedWindow : true
+    })
+    const tab = tabs[0];
+
+    if(!tab)
     {
-        followerCount, followingCount, TotalPosts, DateOfJoin, countTweets
-    }; 
+        throw new Error("no active tab")
+    }
+
+    const UserData = await chrome.tabs.sendMessage(
+    tab.id,
+    {
+        type: "SCRAPE"
+    }
+    );
+
     const response = await fetch("http://localhost:3000/everything",
         {
             method: "POST",
@@ -20,12 +56,14 @@ async function getScrapedDataAndShow()
                 "Content-Type": "application/json",
                 "Authorization" : `Bearer ${token}`
             },
-            body : stringify.json(UserData),
+            body : JSON.stringify({
+            dataProfile: UserData.dataProfile,
+            Last90DaysActivity: UserData.Last90DaysActivity
+            })
         });
 
     return response;
 }
 
-export default getScrapedDataAndShow;
 
 
