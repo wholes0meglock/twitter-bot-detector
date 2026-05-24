@@ -38,7 +38,7 @@ router.post("/", auth, async(req,res) =>
             followers: followerCount,
             following: followingCount,
             posts: TotalPosts,
-            age: DateOfJoin,
+            age: DateOfJoin.daysApprox,
         }),
     });
 
@@ -46,7 +46,7 @@ router.post("/", auth, async(req,res) =>
 
     return res.json({
         success: true,
-        model: result
+        data: result
     })
 } catch(err)
 {

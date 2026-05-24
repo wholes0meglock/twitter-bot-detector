@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener((message,sender,sendResponse) =>
             (async () => {
             try{
             const dataProfile = await mainScrape();
-            const Last90daysActivity = await scrapeLast90Days();
+            const Last90DaysActivity = await scrapeLast90Days();
             sendResponse({dataProfile,Last90DaysActivity});}
             catch(err)
             {

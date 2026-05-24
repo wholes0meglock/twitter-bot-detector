@@ -63,7 +63,7 @@ async function getScrapedDataAndShow()
             })
         });
 
-    return response;
+    return await response.json();
 }
 
 

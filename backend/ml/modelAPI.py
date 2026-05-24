@@ -36,6 +36,7 @@ def to_text(data):
 
 @app.post("/predict")
 def predict(data: InputData):
+    # print("processing")
     text = to_text(data)
 
     result = classifier(text)[0]
