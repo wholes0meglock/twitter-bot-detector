@@ -8,12 +8,27 @@ const router = Router();
 router.post("/", auth, async(req,res) =>
 {
     try{
-    const {followerCount, followingCount, TotalPosts, DateOfJoin, countTweets} = req.body;
+    const { dataProfile, Last90DaysActivity } = req.body;
 
-    if(!followerCount || !followingCount || !TotalPosts || !DateOfJoin || !countTweets)
-    {
-        return res.json("invalid data fetched");
-    }
+
+    const followerCount = dataProfile?.followerCount;
+    const followingCount = dataProfile?.followingCount;
+    const TotalPosts = dataProfile?.TotalPosts;
+    const DateOfJoin = dataProfile?.DateOfJoin; 
+    const countTweets = Last90DaysActivity?.countTweets;
+
+    if (
+    followerCount === undefined || followerCount === null ||
+    followingCount === undefined || followingCount === null ||
+    TotalPosts === undefined || TotalPosts === null ||
+    !DateOfJoin || 
+    countTweets === undefined || countTweets === null
+) 
+{
+    return res.status(400).json("invalid data fetched");
+}
+
+
     const response = await fetch("http://127.0.0.1:8000/predict",{
         method:"POST",
         headers: {

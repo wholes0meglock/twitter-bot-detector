@@ -48,6 +48,7 @@ async function getScrapedDataAndShow()
         type: "SCRAPE"
     }
     );
+    console.log(UserData);
 
     const response = await fetch("http://localhost:3000/everything",
         {

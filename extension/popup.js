@@ -7,7 +7,7 @@ async function show()
     });
     if(response && response.data)
     {
-    document.getElementById("text").innerText = response.data;
+    document.getElementById("text").innerText = JSON.stringify(response.data, null, 2);
     }
     else
     {
@@ -19,4 +19,6 @@ async function show()
     }
 }
 
-show();
+document.addEventListener("DOMContentLoaded", () => {
+    show();
+});
